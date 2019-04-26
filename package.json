@@ -1,0 +1,37 @@
+{
+  "name": "SocketIO",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "NODE_ENV=development ./node_modules/.bin/nodemon bin/run",
+    "start-test": "NODE_ENV=test ./node_modules/.bin/runkoa bin/www",
+    "pm2": "NODE_ENV=production pm2 start bin/run ",
+    "test": "./node_modules/.bin/mocha -u bdd"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "debug": "^2.2.0",
+    "dotenv": "^7.0.0",
+    "ejs": "^2.6.1",
+    "koa": "^2.0.0",
+    "koa-bodyparser": "^2.0.1",
+    "koa-convert": "^1.2.0",
+    "koa-json": "^1.1.1",
+    "koa-logger": "^1.3.0",
+    "koa-onerror": "^1.2.1",
+    "koa-route": "^3.2.0",
+    "koa-router": "^7.0.0",
+    "koa-static": "^1.5.2",
+    "koa-views": "^5.0.1",
+    "koa-websocket": "^5.0.1",
+    "mysql2": "^1.6.5",
+    "runkoa": "^1.5.2",
+    "sequelize": "^5.7.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "nodemon": "^1.9.1",
+    "should": "^8.3.0",
+    "supertest": "^1.2.0"
+  }
+}

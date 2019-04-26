@@ -1,0 +1,19 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.message_box {
+  width: 46%; height: 450px; float: left; border: 1px solid #ccc;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  margin-left: 30px;
+}
+
+.message_box p {
+  width: 100%;
+}

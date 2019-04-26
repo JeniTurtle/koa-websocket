@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/styles/style.css' />
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+  $(function() {
+
+    $('#btn').click(function() {
+      initSocket();
+    });
+
+    function initSocket() {
+      var socket;
+      var ta = document.getElementById('responseText');
+      if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+      }
+      if (window.WebSocket) {
+        socket = new WebSocket("ws://localhost:3000/orderInfo");
+        socket.onmessage = function(event) {
+          ta.innerHTML = event.data;
+        };
+        socket.onopen = function(event) {
+          ta.innerHTML = "连接开启!";
+        };
+        socket.onclose = function(event) {
+          ta.innerHTML += ("<p>连接被关闭</p>");
+        };
+      } else {
+        alert("你的浏览器不支持 WebSocket！");
+      }
+    }
+    window.onbeforeunload = function(event) {
+      event.returnValue = "刷新提醒";
+    };
+  })
+</script>
+<form onsubmit="return false;">
+  <h3>数据接收列表：</h3>
+  <div id="responseText" class="message_box"></div>
+  <input type="button" id="btn" value="开始接收"/>
+</form>
+<br/>
+<br/>
+</body>
+</html>
