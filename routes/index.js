@@ -1,9 +1,5 @@
-var router = require('koa-router')();
-
-router.all('/receiveCode', function (ctx, next) {
-  console.log(ctx.params)
-  ctx.body = "code=0000";
-});
+const router = require('koa-router')();
+const { parsePostData } = require('../common/functions');
 
 router.get('/', async function (ctx, next) {
   ctx.state = {

@@ -23,6 +23,7 @@
     "koa-static": "^1.5.2",
     "koa-views": "^5.0.1",
     "koa-websocket": "^5.0.1",
+    "md5-node": "^1.0.1",
     "mysql2": "^1.6.5",
     "runkoa": "^1.5.2",
     "sequelize": "^5.7.0",

@@ -1640,6 +1640,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+md5-node@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/md5-node/download/md5-node-1.0.1.tgz#0e22d009d46bdc95b1d3c5e8c8feddc1a5c3aa88"
+
 media-typer@0.3.0:
   version "0.3.0"
   resolved "http://registry.npm.taobao.org/media-typer/download/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
@@ -2708,13 +2712,9 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/util-deprecate/download/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
 
-uuid@^3.2.1:
+uuid@^3.2.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "http://registry.npm.taobao.org/uuid/download/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
-
-uuid@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.npm.taobao.org/uuid/download/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
 
 validator@^10.11.0:
   version "10.11.0"

@@ -1,6 +1,7 @@
 const router = require('koa-router')();
+var md5 = require('md5-node');
 const models = require('../database/models');
-const { allWebsocketSendMsg } = require('../common/functions');
+const { allWebsocketSendMsg, parsePostData } = require('../common/functions');
 const { WebsocketDataType } = require('../common/constants');
 
 router.all('/getOrderInfo/:orderId', async (ctx, next) => {
@@ -13,61 +14,62 @@ router.all('/getOrderInfo/:orderId', async (ctx, next) => {
     await ctx.renderJSON(user.dataValues)
 });
 
-router.all('/updateOrderStatus/:orderId/:orderType', async (ctx, next) => {
-    const orderId = ctx.params['orderId'];
-    const orderType = ctx.params['orderType'];
+router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
+    const verifyCode = ctx.params['verifyCode'];
+    const Order = models['Order'];
+    const data = await parsePostData(ctx);
 
-    if (orderType === "finished") {
-        const Order = models['Order'];
+    if (verifyCode !== md5('jouryu123456')) {
+        return ctx.body = "code=0001";
+    }
 
-        const updateRet = await Order.update({
-            status: 61
-        }, {
-            where:{
-                id: orderId
+    if (!data.vgdecoderesult) {
+        await allWebsocketSendMsg(ctx.app, JSON.stringify({
+            type: WebsocketDataType.ORDER_STATUS,
+            data: {
+                message: "扫码设备存在异常"
             }
-        });
+        }));
+        return ctx.body = "code=0002";
+    }
 
-        await (async () => {
-            if (updateRet[0] != 1) {
-                await allWebsocketSendMsg(ctx.app, JSON.stringify({
-                    type: WebsocketDataType.ORDER_STATUS,
-                    data: {
-                        message: "取餐码已失效"
-                    }
-                }));
+    const orderId = parseInt(data.vgdecoderesult);
 
-                return ctx.renderJSON({
-                    code: 2,
-                    message: "取餐码已失效"
-                })
-            }
-            const orderInfo = await Order.findOne({
-                where: { id: orderId }
-            });
-            const orderProducts = await orderInfo.getOrderProducts();
-            const userInfo = await orderInfo.getStaff();
+    const updateRet = await Order.update({
+        status: 61
+    }, {
+        where:{
+            id: orderId
+        }
+    });
 
+    await (async () => {
+        if (updateRet[0] != 1) {
             await allWebsocketSendMsg(ctx.app, JSON.stringify({
-                type: WebsocketDataType.ORDER_INFO,
+                type: WebsocketDataType.ORDER_STATUS,
                 data: {
-                    orderInfo,
-                    userInfo,
-                    orderProducts
+                    message: "无效的取餐码"
                 }
             }));
+            return ctx.body = "code=0003";
+        }
+        const orderInfo = await Order.findOne({
+            where: { id: orderId }
+        });
+        const orderProducts = await orderInfo.getOrderProducts();
+        const userInfo = await orderInfo.getStaff();
 
-            await ctx.renderJSON({
-                code: 0,
-                message: "订单状态修改成功"
-            })
-        })();
-    } else {
-        await ctx.renderJSON({
-            code: 1,
-            error: "无效的订单状态"
-        })
-    }
+        await allWebsocketSendMsg(ctx.app, JSON.stringify({
+            type: WebsocketDataType.ORDER_INFO,
+            data: {
+                orderInfo,
+                userInfo,
+                orderProducts
+            }
+        }));
+
+        return ctx.body = "code=0000";
+    })();
 });
 
 router.get('/listenOrder', async (ctx, next) => {
