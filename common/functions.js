@@ -2,7 +2,12 @@ export const websocketSend = (ctx, data, orderId) => {
     const socketList = ctx.app.websocketList;
 
     for (let index in socketList.orderInfo) {
-        socketList.orderInfo[index].send(JSON.stringify(data))
+        try {
+            socketList.orderInfo[index].send(JSON.stringify(data))
+        } catch (e) {
+            // 如果连接失效的话,删除对象
+            delete socketList.orderInfo[index];
+        }
     }
 
     if (!orderId) {
@@ -10,7 +15,12 @@ export const websocketSend = (ctx, data, orderId) => {
     }
 
     for (let index in socketList.orderStatus[orderId]) {
-        socketList.orderStatus[orderId][index].send(JSON.stringify(data))
+        try {
+            socketList.orderStatus[orderId][index].send(JSON.stringify(data))
+        } catch (e) {
+            // 如果连接失效的话,删除对象
+            delete socketList.orderStatus[orderId][index];
+        }
     }
 };
 
