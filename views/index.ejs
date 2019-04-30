@@ -21,7 +21,7 @@
         window.WebSocket = window.MozWebSocket;
       }
       if (window.WebSocket) {
-        socket = new WebSocket("ws://socket.order.jouryu.com/orderInfo");
+        socket = new WebSocket("wss://socket.order.jouryu.com/orderInfo");
         socket.onmessage = function(event) {
           ta.innerHTML = event.data;
         };
