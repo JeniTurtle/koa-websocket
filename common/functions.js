@@ -1,7 +1,16 @@
-export const allWebsocketSendMsg = (app, msg) => {
-    app = app || [];
-    for (let index in app.websocketList) {
-        app.websocketList[index].send(msg)
+export const websocketSend = (ctx, data, orderId) => {
+    const socketList = ctx.app.websocketLists;
+
+    for (let index in socketList.orderInfo) {
+        socketList.orderInfo[index].send(JSON.stringify(data))
+    }
+
+    if (!orderId) {
+        return null;
+    }
+
+    for (let index in socketList.orderStatus[orderId]) {
+        socketList.orderStatus[orderId][index].send(JSON.stringify(data))
     }
 };
 

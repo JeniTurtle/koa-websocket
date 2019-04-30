@@ -1,0 +1,12 @@
+{
+  "apps": [{
+    "name": "jouryu_order",
+    "script": "bin/run",
+    "instances" : "1",
+    "exec_mode" : "cluster",
+    "error_file": "/home/jouryu/services/socketIO/log/pm2/server.error.log",
+    "out_file": "/home/jouryu/services/socketIO/log/pm2/server.access.log",
+    "merge_logs": true,
+    "log_date_format": "YYYY-MM-DD HH:mm:ss"
+  }]
+}

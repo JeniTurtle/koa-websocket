@@ -1,8 +1,27 @@
 const router = require('koa-router')();
 var md5 = require('md5-node');
 const models = require('../database/models');
-const { allWebsocketSendMsg, parsePostData } = require('../common/functions');
+const { websocketSend, parsePostData } = require('../common/functions');
 const { WebsocketDataType } = require('../common/constants');
+
+const websocketSendMessage = (ctx, message, orderId) => {
+    const data = {
+        type: WebsocketDataType.ORDER_STATUS,
+        data: {
+            message: message
+        }
+    };
+    websocketSend(ctx, data, orderId);
+};
+
+const websocketSendData = (ctx, sendData, orderId) => {
+    const data = {
+        type: WebsocketDataType.ORDER_INFO,
+        data: sendData,
+    };
+    websocketSend(ctx, data, orderId);
+};
+
 
 router.all('/getOrderInfo/:orderId', async (ctx, next) => {
     const orderId = ctx.params['orderId'];
@@ -24,12 +43,6 @@ router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
     }
 
     if (!data.vgdecoderesult) {
-        await allWebsocketSendMsg(ctx.app, JSON.stringify({
-            type: WebsocketDataType.ORDER_STATUS,
-            data: {
-                message: "扫码设备存在异常"
-            }
-        }));
         return ctx.body = "code=0002";
     }
 
@@ -45,12 +58,7 @@ router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
 
     await (async () => {
         if (updateRet[0] != 1) {
-            await allWebsocketSendMsg(ctx.app, JSON.stringify({
-                type: WebsocketDataType.ORDER_STATUS,
-                data: {
-                    message: "无效的取餐码"
-                }
-            }));
+            await websocketSendMessage(ctx, "无效的取餐码", orderId);
             return ctx.body = "code=0003";
         }
         const orderInfo = await Order.findOne({
@@ -58,15 +66,11 @@ router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
         });
         const orderProducts = await orderInfo.getOrderProducts();
         const userInfo = await orderInfo.getStaff();
-
-        await allWebsocketSendMsg(ctx.app, JSON.stringify({
-            type: WebsocketDataType.ORDER_INFO,
-            data: {
-                orderInfo,
-                userInfo,
-                orderProducts
-            }
-        }));
+        await websocketSendData(ctx, {
+            orderInfo,
+            userInfo,
+            orderProducts
+        }, orderId);
 
         return ctx.body = "code=0000";
     })();
