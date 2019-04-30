@@ -1,5 +1,5 @@
 export const websocketSend = (ctx, data, orderId) => {
-    const socketList = ctx.app.websocketLists;
+    const socketList = ctx.app.websocketList;
 
     for (let index in socketList.orderInfo) {
         socketList.orderInfo[index].send(JSON.stringify(data))

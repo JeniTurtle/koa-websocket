@@ -4,7 +4,7 @@ const UUID = require('uuid');
 // 餐厅人员查看所有取餐扫码信息
 router.all('/orderInfo', ctx => {
 
-    ctx.websocket.send('socket连接建立成功');
+    ctx.websocket.send('{"message": "socket连接建立成功"}');
     const key = UUID.v1();
 
     // 把socket连接对象放到全局对象中
@@ -21,7 +21,7 @@ router.all('/orderInfo', ctx => {
 
 // 订餐人员查看当前订餐扫码状态
 router.all('/orderStatus/:orderId', ctx => {
-    ctx.websocket.send('socket连接建立成功');
+    ctx.websocket.send('{"message": "socket连接建立成功"}');
 
     const key = UUID.v1();
     const orderId = ctx.params['orderId'];
