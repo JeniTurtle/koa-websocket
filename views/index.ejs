@@ -1,51 +1,203 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8"/>
-  <title><%= title %></title>
-  <link rel='stylesheet' href='/styles/style.css' />
-  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-</head>
-<body>
-<script type="text/javascript">
-  $(function() {
 
-    $('#btn').click(function() {
-      initSocket();
-    });
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="renderer" content="webkit">
+
+  <title>清泉食堂订单</title>
+  <meta name="keywords" content="清泉食堂订单">
+  <meta name="description" content="清泉食堂订单">
+
+  <link href="/styles/bootstrap.min.css?v=3.4.0" rel="stylesheet">
+  <link href="/styles/animate.css" rel="stylesheet">
+  <link href="/styles/style.css" rel="stylesheet">
+
+  <style>
+    .hide {
+      display: none;
+    }
+    .userinfo-box {
+      line-height: 60px;
+    }
+    .invoice-table td, .invoice-table th {
+      padding: 14px 8px !important;
+    }
+    #no-data {
+      font-size: 16px;
+      text-align: center;
+      margin-top: 160px;
+      color: #979696;
+    }
+  </style>
+
+</head>
+
+<body>
+<div id="wrapper">
+
+  <div id="page-wrapper" class="gray-bg dashbard-1" style="margin-left: 0;">
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="title-action" style="padding-top: 20px;">
+          <strong style="float: left;font-size: 24px;padding-left:14px;">清泉食堂订单</strong>
+          <a style="margin-right: 13px;" target="_blank" id="print-view" class="btn btn-primary"><i class="fa fa-print"></i> 打印 </a>
+        </div>
+    </div>
+    <div class="container" style="padding-bottom: 60px;">
+      <p id="no-data">暂无订单 (ㄒoㄒ) ~~</p>
+      <div class="row template hide">
+        <div class="col-lg-12">
+          <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox-content p-xl">
+              <div class="row">
+                <div class="col-sm-4">
+                  <address class="userinfo-box" style="font-size: 16px;">
+                    <strong>取餐排号：<span class="getId" style="color: green; font-size: 18px;">1</span></strong><br>
+                    <strong>订单号：<span class="orderId"></span></strong><br>
+                    <strong>姓名：<span class="orderUserName"></span></strong><br>
+                    <strong>性别：<span class="orderUserSex"></span></strong><br>
+                    <!--<strong>身份证号：370613199312191512</strong><br>-->
+                    <strong>订餐时间：<span class="orderTime"></span></strong>
+                  </address>
+                </div>
+
+                <div class="col-sm-8 text-right">
+                  <div class="table-responsive">
+                    <table class="table invoice-table" style="text-align: left;font-size: 16px;">
+                      <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>预定菜品</th>
+                        <!--<th>类别</th>-->
+                        <th>数量</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /table-responsive -->
+
+                  <table class="table invoice-total" style="font-size: 16px;">
+                    <tbody>
+                    <tr>
+                      <td><strong>总量：</strong>
+                      </td>
+                      <td class="count-num"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="pull-right">
+        By：<a href="#" target="_blank">清泉实业</a>
+      </div>
+      <div>
+        <strong>Copyright</strong> jouryu &copy; 2019
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- Mainly scripts -->
+<script src="js/jquery-2.1.1.min.js"></script>
+<script src="js/bootstrap.min.js?v=3.4.0"></script>
+<!-- Custom and plugin javascript -->
+<script>
+  $(function() {
+    $("#print-view").click(function() {
+      window.print();
+    })
+
+    var $template = $('.template');
+    var getId = 0;
+
+    initSocket();
 
     function initSocket() {
       var socket;
-      var ta = document.getElementById('responseText');
       if (!window.WebSocket) {
         window.WebSocket = window.MozWebSocket;
       }
       if (window.WebSocket) {
         socket = new WebSocket("wss://socket.order.jouryu.com/orderInfo");
         socket.onmessage = function(event) {
-          ta.innerHTML = event.data;
+          try {
+            var data = JSON.parse(event.data);
+            var countNum = 0;
+
+            switch(data.type) {
+              case "order_info":
+                var $tempDom = $template.clone();
+
+                $('#no-data').remove();
+                $tempDom.removeClass("hide");
+                $tempDom.find(".getId").text(++getId);
+                $tempDom.find(".orderId").text(data.data.orderInfo.order_sn);
+                $tempDom.find(".orderTime").text(format(data.data.orderInfo.addtime * 1000));
+                $tempDom.find(".orderUserName").text(data.data.userInfo.name);
+                $tempDom.find(".orderUserSex").text(data.data.userInfo.sex == 1 ? "男" : "女");
+
+                data.data.orderProducts.forEach(item => {
+                  var $tr = $('<tr></tr>');
+                  $tr.append($("<td>" + item.id + "</td>"))
+                  $tr.append($("<td>" + item.name + "</td>"))
+//                  $tr.append($("<td>" + "早餐" + "</td>"))
+                  $tr.append($("<td>" + item.num + "</td>"))
+                  $tempDom.find(".invoice-table tbody").append($tr);
+                  countNum += item.num;
+                });
+
+                $tempDom.find('.count-num').text(countNum);
+                $('.container').prepend($tempDom);
+                break;
+              case "order_status":
+                break;
+            }
+          } catch (e) {
+            console.error(e.message);
+          }
         };
         socket.onopen = function(event) {
-          ta.innerHTML = "连接开启!";
+          console.log("websocket连接开启!");
         };
         socket.onclose = function(event) {
-          ta.innerHTML += ("<p>连接被关闭</p>");
+          console.log("websocket连接关闭!");
+          initSocket();
         };
       } else {
         alert("你的浏览器不支持 WebSocket！");
       }
     }
+
+    function format(timestamp) {
+      function add0(m){ return m<10?'0'+m:m }
+      var time = new Date(timestamp);
+      var y = time.getFullYear();
+      var m = time.getMonth()+1;
+      var d = time.getDate();
+      var h = time.getHours();
+      var mm = time.getMinutes();
+      var s = time.getSeconds();
+      return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+    }
+
     window.onbeforeunload = function(event) {
       event.returnValue = "刷新提醒";
     };
   })
 </script>
-<form onsubmit="return false;">
-  <h3>数据接收列表：</h3>
-  <div id="responseText" class="message_box"></div>
-  <input type="button" id="btn" value="开始接收"/>
-</form>
-<br/>
-<br/>
 </body>
+
 </html>

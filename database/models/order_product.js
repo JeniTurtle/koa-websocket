@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         order_id: DataTypes.INTEGER,
         name: DataTypes.STRING,
+        num:  DataTypes.INTEGER,
     }, {
         freezeTableName: true,
         tableName: 'lr_order_product',
