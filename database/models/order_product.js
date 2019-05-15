@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         order_id: DataTypes.INTEGER,
         name: DataTypes.STRING,
         num:  DataTypes.INTEGER,
+        price: DataTypes.FLOAT,
     }, {
         freezeTableName: true,
         tableName: 'lr_order_product',

@@ -3891,6 +3891,12 @@ body.modal-open {
   text-align: right;
   width: 15%;
 }
+
+.count-num {
+  border-bottom: 1px solid #DDDDDD;
+  text-align: right;
+  width: 15%;
+}
 /* ERROR & LOGIN & LOCKSCREEN*/
 .middle-box {
   max-width: 400px;

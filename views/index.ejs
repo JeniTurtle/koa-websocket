@@ -70,8 +70,8 @@
                       <tr>
                         <th>编号</th>
                         <th>预定菜品</th>
-                        <!--<th>类别</th>-->
                         <th>数量</th>
+                        <th>金额</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -86,6 +86,9 @@
                       <td><strong>总量：</strong>
                       </td>
                       <td class="count-num"></td>
+                      <td style="width: 18%;"><strong>总金额：</strong>
+                      </td>
+                      <td class="count-price"></td>
                     </tr>
                     </tbody>
                   </table>
@@ -139,6 +142,7 @@
           try {
             var data = JSON.parse(event.data);
             var countNum = 0;
+            var countPrice = 0;
 
             switch(data.type) {
               case "order_info":
@@ -157,12 +161,15 @@
                   $tr.append($("<td>" + item.id + "</td>"))
                   $tr.append($("<td>" + item.name + "</td>"))
 //                  $tr.append($("<td>" + "早餐" + "</td>"))
-                  $tr.append($("<td>" + item.num + "</td>"))
+                  $tr.append($("<td>" + item.num + " 份</td>"))
+                  $tr.append($("<td>" + item.price + " 元</td>"))
                   $tempDom.find(".invoice-table tbody").append($tr);
                   countNum += item.num;
+                  countPrice += item.price;
                 });
 
-                $tempDom.find('.count-num').text(countNum);
+                $tempDom.find('.count-num').text(countNum + " 份");
+                $tempDom.find('.count-price').text(countPrice + " 元");
                 $('.container').prepend($tempDom);
                 break;
               case "order_status":
