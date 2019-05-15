@@ -165,7 +165,7 @@
                   $tr.append($("<td>" + item.price + " 元</td>"))
                   $tempDom.find(".invoice-table tbody").append($tr);
                   countNum += item.num;
-                  countPrice += item.price;
+                  countPrice += parseFloat(item.price);
                 });
 
                 $tempDom.find('.count-num').text(countNum + " 份");
