@@ -4,22 +4,22 @@ const models = require('../database/models');
 const { websocketSend, parsePostData } = require('../common/functions');
 const { WebsocketDataType } = require('../common/constants');
 
-const websocketSendMessage = (ctx, message, orderId) => {
+const websocketSendMessage = (ctx, message, orderId, windowCode) => {
     const data = {
         type: WebsocketDataType.ORDER_STATUS,
         data: {
             message: message
         }
     };
-    websocketSend(ctx, data, orderId);
+    websocketSend(ctx, data, orderId, windowCode);
 };
 
-const websocketSendData = (ctx, sendData, orderId) => {
+const websocketSendData = (ctx, sendData, orderId, windowCode) => {
     const data = {
         type: WebsocketDataType.ORDER_INFO,
         data: sendData,
     };
-    websocketSend(ctx, data, orderId);
+    websocketSend(ctx, data, orderId, windowCode);
 };
 
 
@@ -33,7 +33,8 @@ router.all('/getOrderInfo/:orderId', async (ctx, next) => {
     await ctx.renderJSON(user.dataValues)
 });
 
-router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
+router.all('/updateOrderStatus/:windowCode/:verifyCode', async (ctx, next) => {
+    const windowCode = ctx.params['windowCode'];
     const verifyCode = ctx.params['verifyCode'];
     const Order = models['Order'];
     const data = await parsePostData(ctx);
@@ -58,7 +59,7 @@ router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
 
     await (async () => {
         if (updateRet[0] != 1) {
-            await websocketSendMessage(ctx, "无效的取餐码", orderId);
+            await websocketSendMessage(ctx, "无效的取餐码", orderId, windowCode);
             return ctx.body = "code=0003";
         }
         const orderInfo = await Order.findOne({
@@ -70,7 +71,7 @@ router.all('/updateOrderStatus/:verifyCode', async (ctx, next) => {
             orderInfo,
             userInfo,
             orderProducts
-        }, orderId);
+        }, orderId, windowCode);
 
         return ctx.body = "code=0000";
     })();

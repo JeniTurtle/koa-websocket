@@ -3,15 +3,21 @@ const UUID = require('uuid');
 
 // 餐厅人员查看所有取餐扫码信息
 router.all('/orderInfo/:windowCode', ctx => {
-
     ctx.websocket.send('{"message": "socket连接建立成功"}');
+
     const key = UUID.v1();
+    const windowCode = ctx.params['windowCode'];
+    const socketList = ctx.app.websocketList.orderInfo;
+
+    if (!socketList[windowCode]) {
+        socketList[windowCode] = {};
+    }
 
     // 把socket连接对象放到全局对象中
-    ctx.app.websocketList.orderInfo[key] = ctx.websocket;
+    socketList[windowCode][key] = ctx.websocket;
     // 连接关闭后,从全局对象中删除
     ctx.websocket.on('close', () => {
-        delete ctx.app.websocketList[key]
+        delete socketList[windowCode][key];
     });
 
     ctx.websocket.on('message', message => {

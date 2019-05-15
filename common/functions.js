@@ -1,12 +1,12 @@
-export const websocketSend = (ctx, data, orderId) => {
+export const websocketSend = (ctx, data, orderId, windowCode) => {
     const socketList = ctx.app.websocketList;
 
-    for (let index in socketList.orderInfo) {
+    for (let index in socketList.orderInfo[windowCode]) {
         try {
-            socketList.orderInfo[index].send(JSON.stringify(data))
+            socketList.orderInfo[windowCode][index].send(JSON.stringify(data))
         } catch (e) {
             // 如果连接失效的话,删除对象
-            delete socketList.orderInfo[index];
+            delete socketList.orderInfo[windowCode][index];
         }
     }
 
