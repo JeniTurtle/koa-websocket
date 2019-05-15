@@ -6,9 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="renderer" content="webkit">
 
-  <title>清泉食堂订单</title>
-  <meta name="keywords" content="清泉食堂订单">
-  <meta name="description" content="清泉食堂订单">
+  <title><%= title %></title>
+  <meta name="keywords" content="<%= title %>">
+  <meta name="description" content="<%= title %>">
 
   <link href="/styles/bootstrap.min.css?v=3.4.0" rel="stylesheet">
   <link href="/styles/animate.css" rel="stylesheet">
@@ -41,7 +41,7 @@
 
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="title-action" style="padding-top: 20px;">
-          <strong style="float: left;font-size: 24px;padding-left:14px;">清泉食堂订单</strong>
+          <strong style="float: left;font-size: 24px;padding-left:14px;"><%= title %></strong>
           <a style="margin-right: 13px;" target="_blank" id="print-view" class="btn btn-primary"><i class="fa fa-print"></i> 打印 </a>
         </div>
     </div>
@@ -131,8 +131,11 @@
         window.WebSocket = window.MozWebSocket;
       }
       if (window.WebSocket) {
-        socket = new WebSocket("wss://socket.order.jouryu.com/orderInfo");
+        socket = new WebSocket("wss://socket.order.jouryu.com/orderInfo/<%= windowCode%>");
+        // socket = new WebSocket("ws://localhost:3000/orderInfo/<%= windowCode%>");
         socket.onmessage = function(event) {
+          console.log(event.data);
+
           try {
             var data = JSON.parse(event.data);
             var countNum = 0;

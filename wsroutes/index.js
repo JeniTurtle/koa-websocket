@@ -2,7 +2,7 @@ const router = require('koa-router')();
 const UUID = require('uuid');
 
 // 餐厅人员查看所有取餐扫码信息
-router.all('/orderInfo', ctx => {
+router.all('/orderInfo/:windowCode', ctx => {
 
     ctx.websocket.send('{"message": "socket连接建立成功"}');
     const key = UUID.v1();
