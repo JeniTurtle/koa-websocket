@@ -162,10 +162,10 @@
                   $tr.append($("<td>" + item.name + "</td>"))
 //                  $tr.append($("<td>" + "早餐" + "</td>"))
                   $tr.append($("<td>" + item.num + " 份</td>"))
-                  $tr.append($("<td>" + item.price + " 元</td>"))
+                  $tr.append($("<td>" + item.price*item.num + " 元</td>"))
                   $tempDom.find(".invoice-table tbody").append($tr);
                   countNum += item.num;
-                  countPrice += parseFloat(item.price);
+                  countPrice += parseFloat(item.price*item.num);
                 });
 
                 $tempDom.find('.count-num').text(countNum + " 份");
